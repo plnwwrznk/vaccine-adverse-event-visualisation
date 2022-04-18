@@ -1,0 +1,5 @@
+pylint
+pandas
+numpy
+black
+dash
