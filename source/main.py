@@ -2,6 +2,15 @@
 from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
+import os
+import glob
+
+df = pd.concat(
+    map(pd.read_csv, ['2015VAERSVAX.csv', '2016VAERSVAX.csv']), ignore_index=True)
+print(df)
+
+
+
 
 app = Dash(__name__)
 

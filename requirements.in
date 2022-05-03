@@ -3,3 +3,6 @@ pandas
 numpy
 black
 dash
+glob
+os
+urllib
