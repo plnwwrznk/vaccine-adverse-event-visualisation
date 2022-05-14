@@ -54,38 +54,29 @@ columns_symptoms = [
 ]
 
 VAERSDATA = pd.concat(
-    map(read_w_parameters, glob.glob("data\\*VAERSDATA.csv"), repeat(columns_data)),
+    map(read_w_parameters, glob.glob("data/*VAERSDATA.csv"), repeat(columns_data)),
     ignore_index=True,
 )
 
 VAERSVAX = pd.concat(
-    map(read_w_parameters, glob.glob("data\\*VAERSVAX.csv"), repeat(columns_vax)),
+    map(read_w_parameters, glob.glob("data/*VAERSVAX.csv"), repeat(columns_vax)),
     ignore_index=True,
 )
 
 VAERSSYMPTOMS = pd.concat(
     map(
         read_w_parameters,
-        glob.glob("data\\*VAERSSYMPTOMS.csv"),
+        glob.glob("data/*VAERSSYMPTOMS.csv"),
         repeat(columns_symptoms),
     ),
     ignore_index=True,
 )
 
-
 app = Dash(__name__)
 
-# assume you have a "long-form" data frame
-# see https://plotly.com/python/px-arguments/ for more options
-df = pd.DataFrame(
-    {
-        "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-        "Amount": [4, 1, 2, 2, 4, 5],
-        "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"],
-    }
+df2 = (
+    VAERSDATA.round(0).groupby(["AGE_YRS"])["AGE_YRS"].size().reset_index(name="ilosc")
 )
-
-fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 
 app.layout = html.Div(
     children=[
@@ -95,19 +86,23 @@ app.layout = html.Div(
         Dash: A web application framework for your data.
     """
         ),
-        dcc.Graph(id="example-graph", figure=fig),
-        dcc.Slider(0, 20, 2, value=10, id="my-slider"),
+        dcc.Graph(id="graph-with-slider"),
+        dcc.RangeSlider(0, 120, 1, value=[10, 50], id="my-range-slider"),
         html.Div(id="slider-output-container"),
     ]
 )
 
 
 @app.callback(
-    Output("slider-output-container", "children"), Input("my-slider", "value")
+    Output("graph-with-slider", "figure"), [Input("my-range-slider", "value")]
 )
-def update_output(value):
+def update_figure(value):
     """zwraca napis z wartością ze slidera"""
-    return f'You have selected "{value}"'
+    filtered_df = df2[(df2["AGE_YRS"] > value[0]) & (df2["AGE_YRS"] < value[1])]
+    fig = px.line(filtered_df, x="AGE_YRS", y="ilosc")
+    fig.update_layout(transition_duration=500)
+
+    return fig
 
 
 if __name__ == "__main__":
