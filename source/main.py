@@ -54,19 +54,19 @@ columns_symptoms = [
 ]
 
 VAERSDATA = pd.concat(
-    map(read_w_parameters, glob.glob("data\\*VAERSDATA.csv"), repeat(columns_data)),
+    map(read_w_parameters, glob.glob("data/*VAERSDATA.csv"), repeat(columns_data)),
     ignore_index=True,
 )
 
 VAERSVAX = pd.concat(
-    map(read_w_parameters, glob.glob("data\\*VAERSVAX.csv"), repeat(columns_vax)),
+    map(read_w_parameters, glob.glob("data/*VAERSVAX.csv"), repeat(columns_vax)),
     ignore_index=True,
 )
 
 VAERSSYMPTOMS = pd.concat(
     map(
         read_w_parameters,
-        glob.glob("data\\*VAERSSYMPTOMS.csv"),
+        glob.glob("data/*VAERSSYMPTOMS.csv"),
         repeat(columns_symptoms),
     ),
     ignore_index=True,
