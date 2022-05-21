@@ -8,7 +8,7 @@ import pandas as pd
 
 def read_w_parameters(file, fields):
     """function to read from multiple csv files with parameters"""
-    return pd.read_csv(file, encoding="iso-8859-1", usecols=fields)
+    return pd.read_csv(file, encoding="iso-8859-1", usecols=fields, low_memory=False)
 
 
 columns_data = [
@@ -72,11 +72,23 @@ VAERSSYMPTOMS = pd.concat(
     ignore_index=True,
 )
 
+DATA_VAX = pd.merge(VAERSDATA, VAERSVAX, on="VAERS_ID")
+
 app = Dash(__name__)
 
 df2 = (
     VAERSDATA.round(0).groupby(["AGE_YRS"])["AGE_YRS"].size().reset_index(name="ilosc")
 )
+
+df3 = pd.DataFrame(
+    {
+        "Amount_doctor": DATA_VAX.notnull().groupby(["ER_VISIT"])["ER_VISIT"].count(),
+        "Vaccine": DATA_VAX["VAX_NAME"],
+    }
+)
+
+
+fig2 = px.bar(df3, x="Vaccine", y="Amount_doctor")
 
 app.layout = html.Div(
     children=[
@@ -89,12 +101,27 @@ app.layout = html.Div(
         dcc.Graph(id="graph-with-slider"),
         dcc.RangeSlider(0, 120, 1, value=[10, 50], id="my-range-slider"),
         html.Div(id="slider-output-container"),
+        html.Div(
+            [
+                html.Div(
+                    children=[
+                        dcc.Graph(id="doctor-graph", figure=fig2),
+                        html.Label("Wybierz szczepionke"),
+                        dcc.Dropdown(df3.Vaccine, id="wybierz-szczepionke"),
+                    ],
+                    style={"padding": 10, "flex": 1},
+                ),
+            ]
+        ),
     ]
 )
 
 
 @app.callback(
     Output("graph-with-slider", "figure"), [Input("my-range-slider", "value")]
+)
+@app.callback(
+    Output("doctor-graph", "figure"), [Input("wybierz-szczepionke", "options")]
 )
 def update_figure(value):
     """zwraca napis z wartością ze slidera"""
