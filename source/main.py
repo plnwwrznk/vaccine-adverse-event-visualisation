@@ -58,9 +58,13 @@ VAERSDATA = pd.concat(
     ignore_index=True,
 )
 
-VAERSVAX = pd.concat(
-    map(read_w_parameters, glob.glob("data/*VAERSVAX.csv"), repeat(columns_vax)),
-    ignore_index=True,
+VAERSVAX = (
+    pd.concat(
+        map(read_w_parameters, glob.glob("data/*VAERSVAX.csv"), repeat(columns_vax)),
+        ignore_index=True,
+    )
+    .replace({"VAX_NAME": r"\(SEASONAL\)"}, {"VAX_NAME": "SEASONAL"}, regex=True)
+    .replace({"VAX_NAME": r"\(H1N1\)"}, {"VAX_NAME": "H1N1"}, regex=True)
 )
 
 VAERSSYMPTOMS = pd.concat(
@@ -80,15 +84,14 @@ df2 = (
     VAERSDATA.round(0).groupby(["AGE_YRS"])["AGE_YRS"].size().reset_index(name="ilosc")
 )
 
-df3 = pd.DataFrame(
-    {
-        "Amount_doctor": DATA_VAX.notnull().groupby(["ER_VISIT"])["ER_VISIT"].count(),
-        "Vaccine": DATA_VAX["VAX_NAME"],
-    }
+df3 = (
+    DATA_VAX.groupby(["VAX_NAME", "ER_VISIT"])
+    .size()
+    .reset_index(name="ilosc")
+    .sort_values(by="ilosc")
 )
 
-
-fig2 = px.bar(df3, x="Vaccine", y="Amount_doctor")
+vax_names = pd.unique(DATA_VAX["VAX_NAME"].replace(regex={r" \(.*\)$": ""}))
 
 app.layout = html.Div(
     children=[
@@ -102,16 +105,12 @@ app.layout = html.Div(
         dcc.RangeSlider(0, 120, 1, value=[10, 50], id="my-range-slider"),
         html.Div(id="slider-output-container"),
         html.Div(
-            [
-                html.Div(
-                    children=[
-                        dcc.Graph(id="doctor-graph", figure=fig2),
-                        html.Label("Wybierz szczepionke"),
-                        dcc.Dropdown(df3.Vaccine, id="wybierz-szczepionke"),
-                    ],
-                    style={"padding": 10, "flex": 1},
-                ),
-            ]
+            children=[
+                dcc.Graph(id="doctor-graph"),
+                html.Label("Wybierz szczepionke"),
+                dcc.Dropdown(vax_names, "INFLUENZA SEASONAL", id="wybierz-szczepionke"),
+            ],
+            style={"padding": 10, "flex": 1},
         ),
     ]
 )
@@ -120,16 +119,23 @@ app.layout = html.Div(
 @app.callback(
     Output("graph-with-slider", "figure"), [Input("my-range-slider", "value")]
 )
-@app.callback(
-    Output("doctor-graph", "figure"), [Input("wybierz-szczepionke", "options")]
-)
-def update_figure(value):
-    """zwraca napis z wartością ze slidera"""
-    filtered_df = df2[(df2["AGE_YRS"] > value[0]) & (df2["AGE_YRS"] < value[1])]
-    fig = px.line(filtered_df, x="AGE_YRS", y="ilosc")
+def update_slider(value):
+    """updating line graph based on the slider value"""
+    mask = (df2["AGE_YRS"] > value[0]) & (df2["AGE_YRS"] < value[1])
+    fig = px.line(df2[mask], x="AGE_YRS", y="ilosc")
     fig.update_layout(transition_duration=500)
 
     return fig
+
+
+@app.callback(Output("doctor-graph", "figure"), [Input("wybierz-szczepionke", "value")])
+def update_graph(value):
+    """updating bar graph"""
+    mask = df3["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == value
+    fig2 = px.bar(df3[mask], x="VAX_NAME", y="ilosc", labels={"VAX_NAME": value})
+    fig2.update_layout()
+
+    return fig2
 
 
 if __name__ == "__main__":
