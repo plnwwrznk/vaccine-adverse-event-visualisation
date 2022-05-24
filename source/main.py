@@ -85,12 +85,11 @@ df2 = (
 )
 
 df3 = (
-    DATA_VAX.groupby(["VAX_NAME", "ER_VISIT"])
+    DATA_VAX[DATA_VAX["ER_VISIT"] == 'Y'].groupby(["VAX_NAME"])
     .size()
     .reset_index(name="ilosc")
     .sort_values(by="ilosc")
 )
-
 vax_names = pd.unique(DATA_VAX["VAX_NAME"].replace(regex={r" \(.*\)$": ""}))
 
 app.layout = html.Div(
@@ -132,7 +131,7 @@ def update_slider(value):
 def update_graph(value):
     """updating bar graph"""
     mask = df3["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == value
-    fig2 = px.bar(df3[mask], x="VAX_NAME", y="ilosc", labels={"VAX_NAME": value})
+    fig2 = px.bar(df3[mask], x="VAX_NAME", y="ilosc", labels={"VAX_NAME": "Vaccine for disease: " +value, "ilosc": "Number of ER visits"})
     fig2.update_layout()
 
     return fig2
