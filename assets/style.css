@@ -1,0 +1,81 @@
+html, body{
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Open Sans Semi Bold";
+  letter-spacing: 2.1px;
+  font-size: 21px;
+  padding-left: 12px;
+}
+
+p {
+  font-family: "Open Sans Light";
+  font-weight: 400;
+  font-size: 14px;
+  padding-left: 12px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.header{
+  background-color: #388087;
+  text-align: center;
+}
+.header-description{
+  color: #f6f6f2;
+  font-size: 20px;
+}
+.header-title{
+  color: white;
+  font-size: 48px;
+}
+
+.graphs{
+  width: 100%;
+}
+
+.graphs-selection{
+  width: 100%;
+  background-color: #c2edce;
+  text-align: center;
+
+  padding-top: 12px;
+}
+.grid-wrapper{
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+  height: 100%;
+}
+.doctors_graph{
+  padding: 10;
+  flex: 1
+}
+.custom-tab {
+    color: #6fb3b8;
+}
+
+.custom-tab--selected {
+    box-shadow: 1px 1px 0px white;
+    border-left: 1px solid lightgrey !important;
+    border-right: 1px solid lightgrey !important;
+    border-top: 3px solid #f8766d !important;
+    background-color: #f6f6f2 !important;
+
+}
+.colors{
+ 	1: #388087
+	2: #6fb3b8
+	3: #badfe7
+	4: #c2edce
+	5: #f6f6f2
+	6: #f8766d
+}
