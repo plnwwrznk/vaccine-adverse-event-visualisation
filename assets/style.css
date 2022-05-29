@@ -1,0 +1,95 @@
+html, body{
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Open Sans Semi Bold";
+  letter-spacing: 2.1px;
+  font-size: 21px;
+  padding-left: 12px;
+}
+
+p {
+  font-family: "Open Sans Light";
+  font-weight: 400;
+  font-size: 14px;
+  padding-left: 12px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.header{
+  background-color: #2F243A;
+  text-align: center;
+}
+.header-description{
+  color: #f6f6f2;
+  font-size: 20px;
+}
+.header-title{
+  color: white;
+  font-size: 48px;
+}
+
+.graphs{
+  width: 100%;
+}
+
+.graphs-selection{
+  width: 100%;
+  background-color: #FAC9B8;
+  text-align: center;
+
+  padding-top: 12px;
+}
+.grid-wrapper{
+  display: grid;
+  grid-template-rows: 1fr 9fr;
+  height: 100%;
+}
+.doctors_graph{
+  padding: 10;
+  flex: 1
+}
+.custom-tab {
+    color: #f8766d;
+    font-size: 18px;
+    font-family: "Open Sans Semi Bold";
+}
+
+.custom-tab--selected {
+    box-shadow: 1px 1px 0px white;
+    border-left: 1px solid lightgrey !important;
+    border-right: 1px solid lightgrey !important;
+    border-top: 3px solid #f8766d !important;
+    background-color: #BEBBBB !important;
+}
+
+
+.rc-slider-dot-active, .rc-slider-handle, .rc-slider-handle:hover, .rc-slider-handle-active, .rc-slider-disabled, .rc-slider-track {
+  border-color: #ed5d53;
+  border: #ed5d53;
+  background-color: #ed5d53;
+}
+.rc-slider-handle-dragging, .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+box-shadow: 0 0 5px #BEBBBB;
+border-color: #BEBBBB;
+}
+
+.colors{
+ 	dark purple: #2F243A
+	independence: #444054
+	gray xx gray: #BEBBBB
+	biały: #f6f6f2
+	apricot: #FAC9B8
+	koralowy: #f8766d
+	dark red: #ed5d53
+}
