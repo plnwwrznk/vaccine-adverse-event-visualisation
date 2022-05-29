@@ -27,7 +27,7 @@ a {
 }
 
 .header{
-  background-color: #388087;
+  background-color: #2F243A;
   text-align: center;
 }
 .header-description{
@@ -45,7 +45,7 @@ a {
 
 .graphs-selection{
   width: 100%;
-  background-color: #c2edce;
+  background-color: #FAC9B8;
   text-align: center;
 
   padding-top: 12px;
@@ -60,7 +60,9 @@ a {
   flex: 1
 }
 .custom-tab {
-    color: #6fb3b8;
+    color: #f8766d;
+    font-size: 18px;
+    font-family: "Open Sans Semi Bold";
 }
 
 .custom-tab--selected {
@@ -68,14 +70,26 @@ a {
     border-left: 1px solid lightgrey !important;
     border-right: 1px solid lightgrey !important;
     border-top: 3px solid #f8766d !important;
-    background-color: #f6f6f2 !important;
-
+    background-color: #BEBBBB !important;
 }
+
+
+.rc-slider-dot-active, .rc-slider-handle, .rc-slider-handle:hover, .rc-slider-handle-active, .rc-slider-disabled, .rc-slider-track {
+  border-color: #ed5d53;
+  border: #ed5d53;
+  background-color: #ed5d53;
+}
+.rc-slider-handle-dragging, .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+box-shadow: 0 0 5px #BEBBBB;
+border-color: #BEBBBB;
+}
+
 .colors{
- 	1: #388087
-	2: #6fb3b8
-	3: #badfe7
-	4: #c2edce
-	5: #f6f6f2
-	6: #f8766d
+ 	dark purple: #2F243A
+	independence: #444054
+	gray xx gray: #BEBBBB
+	biały: #f6f6f2
+	apricot: #FAC9B8
+	koralowy: #f8766d
+	dark red: #ed5d53
 }
