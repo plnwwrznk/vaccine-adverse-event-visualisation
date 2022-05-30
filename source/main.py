@@ -93,6 +93,15 @@ df3 = (
 )
 vax_names = pd.unique(DATA_VAX["VAX_NAME"].replace(regex={r" \(.*\)$": ""}))
 
+df4 = (
+    DATA_VAX[DATA_VAX["HOSPITAL"] == "Y"]
+    .groupby(["VAX_NAME"])
+    .size()
+    .reset_index(name="ilosc_h")
+    .sort_values(by="ilosc_h")
+)
+vax_names = pd.unique(DATA_VAX["VAX_NAME"].replace(regex={r" \(.*\)$": ""}))
+
 app.layout = html.Div(
     children=[
         html.H1(children="Hello Dash"),
@@ -109,6 +118,16 @@ app.layout = html.Div(
                 dcc.Graph(id="doctor-graph"),
                 html.Label("Wybierz szczepionke"),
                 dcc.Dropdown(vax_names, "INFLUENZA SEASONAL", id="wybierz-szczepionke"),
+            ],
+            style={"padding": 10, "flex": 1},
+        ),
+        html.Div(
+            children=[
+                dcc.Graph(id="hospital-graph"),
+                html.Label("Wybierz szczepionke"),
+                dcc.Dropdown(
+                    vax_names, "INFLUENZA SEASONAL", id="wybierz-szczepionke-2"
+                ),
             ],
             style={"padding": 10, "flex": 1},
         ),
@@ -144,6 +163,26 @@ def update_graph(value):
     fig2.update_layout()
 
     return fig2
+
+
+@app.callback(
+    Output("hospital-graph", "figure"), [Input("wybierz-szczepionke-2", "value")]
+)
+def update_graph(value):
+    """updating bar graph"""
+    mask2 = df4["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == value
+    fig3 = px.bar(
+        df4[mask2],
+        x="VAX_NAME",
+        y="ilosc_h",
+        labels={
+            "VAX_NAME": "Vaccine for disease: " + value,
+            "ilosc_h": "Number of Hospital visits",
+        },
+    )
+    fig3.update_layout()
+
+    return fig3
 
 
 if __name__ == "__main__":
