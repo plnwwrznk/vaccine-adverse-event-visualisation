@@ -4,7 +4,7 @@ This is a dash app written as a project for the classes at the Adam Mickiewicz U
 
 How to run the app?
 
-python source/main.py
+python ./index.py
 
 and visit http://127.0.0.1:8050/ in your web browser.
 Building and running basic app docker
