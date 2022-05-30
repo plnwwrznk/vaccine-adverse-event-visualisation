@@ -168,7 +168,7 @@ def update_graph(value):
 @app.callback(
     Output("hospital-graph", "figure"), [Input("wybierz-szczepionke-2", "value")]
 )
-def update_graph(value):
+def update_graph2(value):
     """updating bar graph"""
     mask2 = df4["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == value
     fig3 = px.bar(
