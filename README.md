@@ -11,7 +11,7 @@ Building and running basic app docker
 
 docker build -t uam-dash .
 
-docker run --rm -p 8000:8000 uam-dash
+docker run --rm -p 8000:8000 --name szczepionki uam-dash
 
 To see the app open:
 - on linux:  http://0.0.0.0:8000 
