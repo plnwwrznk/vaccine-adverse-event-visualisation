@@ -8,6 +8,7 @@ app = Dash(__name__, assets_folder="../assets")
 
 DATA_VAX = readdata.read_vax_data()
 
+
 app.layout = html.Div(
     className="grid-wrapper",
     children=[
@@ -53,18 +54,35 @@ app.layout = html.Div(
                             ],
                         ),
                         dcc.Tab(
-                            label="Number of ER Visits",
+                            label="Number of patient Visits",
                             className="custom-tab",
                             selected_className="custom-tab--selected",
                             children=[
                                 html.Div(
                                     className="graphs-selection",
                                     children=[
-                                        html.Label("Select Vaccine type"),
-                                        dcc.Dropdown(
-                                            pd.unique(DATA_VAX["VAX_TYPE"]),
-                                            "INFLUENZA SEASONAL",
-                                            id="wybierz-szczepionke",
+                                        html.Div(
+                                            className="dropdown-1",
+                                            children=[
+                                                html.Label("Select Vaccine type"),
+                                                dcc.Dropdown(
+                                                    pd.unique(DATA_VAX["VAX_TYPE"]),
+                                                    "INFLUENZA SEASONAL",
+                                                    id="wybierz-szczepionke",
+                                                ),
+                                            ],
+                                        ),
+                                        html.Div(
+                                            className="dropdown-2",
+                                            children=[
+                                                html.Label("Patient action"),
+                                                dcc.Dropdown(
+                                                    ["ER visit", "Hospital visit"],
+                                                    value=[],
+                                                    multi=True,
+                                                    id="wybierz-akcje",
+                                                ),
+                                            ],
                                         ),
                                     ],
                                 ),
@@ -122,24 +140,31 @@ def update_slider(value):
     return fig
 
 
-@app.callback(Output("doctor-graph", "figure"), [Input("wybierz-szczepionke", "value")])
-def update_graph(value):
+@app.callback(
+    Output("doctor-graph", "figure"),
+    [Input("wybierz-szczepionke", "value"), Input("wybierz-akcje", "value")],
+)
+def update_graph(szczepionka, akcja):
     """updating bar graph"""
     df3 = (
-        DATA_VAX[DATA_VAX["ER_VISIT"] == "Y"]
-        .groupby(["VAX_NAME", "BRAND"])
-        .size()
-        .reset_index(name="ilosc")
-        .sort_values(by="ilosc")
+        DATA_VAX.groupby(["VAX_NAME", "BRAND"])
+        .agg(ER_VISITS=("ER_VISIT", "count"), HOSPITAL_VISITS=("HOSPITAL", "count"))
+        .reset_index()
     )
-    mask = df3["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == value
+    if akcja == ["ER visit"]:
+        column = ["ER_VISITS"]
+    elif akcja == ["Hospital visit"]:
+        column = ["HOSPITAL_VISITS"]
+    else:
+        column = ["ER_VISITS", "HOSPITAL_VISITS"]
+    mask = df3["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == szczepionka
     fig2 = px.bar(
-        df3[mask],
+        df3[mask].sort_values(column),
         x="BRAND",
-        y="ilosc",
+        y=column,
         labels={
             "BRAND": "Available vaccines",
-            "ilosc": "Number of ER visits",
+            "value": "Number of patient visits",
         },
         template="ggplot2",
     )

@@ -80,8 +80,8 @@ a {
   background-color: #ed5d53;
 }
 .rc-slider-handle-dragging, .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
-box-shadow: 0 0 5px #BEBBBB;
-border-color: #BEBBBB;
+  box-shadow: 0 0 5px #BEBBBB;
+  border-color: #BEBBBB;
 }
 
 .colors{
