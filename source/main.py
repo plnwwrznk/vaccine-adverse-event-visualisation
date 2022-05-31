@@ -9,7 +9,11 @@ app = Dash(__name__, assets_folder="../assets")
 
 DATA_VAX = readdata.read_vax_data()
 
-print(DATA_VAX["SYMPTOMS_str"].map(lambda x: parsesymptoms.find_symptoms("Injection site", x)).value_counts()[True])
+print(
+    DATA_VAX["SYMPTOMS_str"]
+    .map(lambda x: parsesymptoms.find_symptoms("Injection site", x))
+    .value_counts()[True]
+)
 
 
 app.layout = html.Div(
@@ -83,9 +87,18 @@ app.layout = html.Div(
                                                 html.Label("Event"),
                                                 dcc.Dropdown(
                                                     [
-                                                           {'label': 'ER visit', 'value': 'ER_VISITS'},
-                                                           {'label': 'Hospital visit', 'value': 'HOSPITAL_VISITS'},
-                                                           {'label': 'Death', 'value': 'DEATHS'},
+                                                        {
+                                                            "label": "ER visit",
+                                                            "value": "ER_VISITS",
+                                                        },
+                                                        {
+                                                            "label": "Hospital visit",
+                                                            "value": "HOSPITAL_VISITS",
+                                                        },
+                                                        {
+                                                            "label": "Death",
+                                                            "value": "DEATHS",
+                                                        },
                                                     ],
                                                     value=[],
                                                     multi=True,
@@ -111,9 +124,13 @@ app.layout = html.Div(
                                 html.Div(
                                     [
                                         html.H3("Possible symptoms"),
-                                        html.Label(str(
-                                            parsesymptoms.list_matching_symptoms("Wrong", DATA_VAX["SYMPTOMS"])))
-
+                                        html.Label(
+                                            str(
+                                                parsesymptoms.list_matching_symptoms(
+                                                    "Wrong", DATA_VAX["SYMPTOMS"]
+                                                )
+                                            )
+                                        ),
                                     ]
                                 )
                             ],
@@ -166,7 +183,11 @@ def update_graph(szczepionka, akcja):
     """updating bar graph"""
     df3 = (
         DATA_VAX.groupby(["VAX_NAME", "BRAND"])
-        .agg(ER_VISITS=("ER_VISIT", "count"), HOSPITAL_VISITS=("HOSPITAL", "count"), DEATHS=("DIED", "count"))
+        .agg(
+            ER_VISITS=("ER_VISIT", "count"),
+            HOSPITAL_VISITS=("HOSPITAL", "count"),
+            DEATHS=("DIED", "count"),
+        )
         .reset_index()
     )
     mask = df3["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == szczepionka
@@ -183,7 +204,7 @@ def update_graph(szczepionka, akcja):
             "value": "Number of patient visits",
         },
         template="ggplot2",
-        color_discrete_sequence=colors
+        color_discrete_sequence=colors,
     )
     fig2.update_layout(plot_bgcolor="#f6f6f2")
     fig2.update_layout()
