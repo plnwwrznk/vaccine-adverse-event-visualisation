@@ -15,7 +15,6 @@ print(
     .value_counts()[True]
 )
 
-
 app.layout = html.Div(
     className="grid-wrapper",
     children=[
