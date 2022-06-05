@@ -1,13 +1,19 @@
-"""test file"""
+"""layout file"""
 from dash import Dash, html, dcc, Input, Output
 import plotly.express as px
 import pandas as pd
 from source import readdata
+from source import parsesymptoms
 
 app = Dash(__name__, assets_folder="../assets")
 
 DATA_VAX = readdata.read_vax_data()
 
+print(
+    DATA_VAX["SYMPTOMS_str"]
+    .map(lambda x: parsesymptoms.find_symptoms("Injection site", x))
+    .value_counts()[True]
+)
 
 app.layout = html.Div(
     className="grid-wrapper",
@@ -54,7 +60,7 @@ app.layout = html.Div(
                             ],
                         ),
                         dcc.Tab(
-                            label="Number of patient Visits",
+                            label="Number of events after vaccine",
                             className="custom-tab",
                             selected_className="custom-tab--selected",
                             children=[
@@ -66,7 +72,9 @@ app.layout = html.Div(
                                             children=[
                                                 html.Label("Select Vaccine type"),
                                                 dcc.Dropdown(
-                                                    pd.unique(DATA_VAX["VAX_TYPE"]),
+                                                    sorted(
+                                                        pd.unique(DATA_VAX["VAX_TYPE"])
+                                                    ),
                                                     "INFLUENZA SEASONAL",
                                                     id="wybierz-szczepionke",
                                                 ),
@@ -75,9 +83,22 @@ app.layout = html.Div(
                                         html.Div(
                                             className="dropdown-2",
                                             children=[
-                                                html.Label("Patient action"),
+                                                html.Label("Event"),
                                                 dcc.Dropdown(
-                                                    ["ER visit", "Hospital visit"],
+                                                    [
+                                                        {
+                                                            "label": "ER visit",
+                                                            "value": "ER_VISITS",
+                                                        },
+                                                        {
+                                                            "label": "Hospital visit",
+                                                            "value": "HOSPITAL_VISITS",
+                                                        },
+                                                        {
+                                                            "label": "Death",
+                                                            "value": "DEATHS",
+                                                        },
+                                                    ],
                                                     value=[],
                                                     multi=True,
                                                     id="wybierz-akcje",
@@ -98,7 +119,20 @@ app.layout = html.Div(
                             label="Tab three, multiline",
                             className="custom-tab",
                             selected_className="custom-tab--selected",
-                            children=[html.Div([html.H3("Tab content 3")])],
+                            children=[
+                                html.Div(
+                                    [
+                                        html.H3("Possible symptoms"),
+                                        html.Label(
+                                            str(
+                                                parsesymptoms.list_matching_symptoms(
+                                                    "Wrong", DATA_VAX["SYMPTOMS"]
+                                                )
+                                            )
+                                        ),
+                                    ]
+                                )
+                            ],
                         ),
                         dcc.Tab(
                             label="Tab four",
@@ -148,25 +182,28 @@ def update_graph(szczepionka, akcja):
     """updating bar graph"""
     df3 = (
         DATA_VAX.groupby(["VAX_NAME", "BRAND"])
-        .agg(ER_VISITS=("ER_VISIT", "count"), HOSPITAL_VISITS=("HOSPITAL", "count"))
+        .agg(
+            ER_VISITS=("ER_VISIT", "count"),
+            HOSPITAL_VISITS=("HOSPITAL", "count"),
+            DEATHS=("DIED", "count"),
+        )
         .reset_index()
     )
-    if akcja == ["ER visit"]:
-        column = ["ER_VISITS"]
-    elif akcja == ["Hospital visit"]:
-        column = ["HOSPITAL_VISITS"]
-    else:
-        column = ["ER_VISITS", "HOSPITAL_VISITS"]
     mask = df3["VAX_NAME"].replace(regex={r" \(.*\)$": ""}) == szczepionka
+    if not akcja:
+        akcja = ["ER_VISITS", "HOSPITAL_VISITS", "DEATHS"]
+    colors = ["#ed5d53", "#BEBBBB", "#444054"]
     fig2 = px.bar(
-        df3[mask].sort_values(column),
+        df3[mask].sort_values(akcja, ascending=False),
         x="BRAND",
-        y=column,
+        y=akcja,
+        barmode="group",
         labels={
             "BRAND": "Available vaccines",
             "value": "Number of patient visits",
         },
         template="ggplot2",
+        color_discrete_sequence=colors,
     )
     fig2.update_layout(plot_bgcolor="#f6f6f2")
     fig2.update_layout()

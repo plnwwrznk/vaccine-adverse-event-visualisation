@@ -3,6 +3,7 @@
 import glob
 from itertools import repeat
 import pandas as pd
+from source import parsesymptoms as symp
 
 
 def read_w_parameters(file, fields):
@@ -94,6 +95,8 @@ def read_vax_data():
         ),
         ignore_index=True,
     )
+    vaerssymptoms["SYMPTOMS"] = symp.parse_symptom_columns(vaerssymptoms)
+    vaerssymptoms["SYMPTOMS_str"] = symp.parse_symptom_columns_str(vaerssymptoms)
     data_vax1 = pd.merge(vaersdata, vaerssymptoms, on="VAERS_ID")
     data_vax = pd.merge(data_vax1, vaersvax, on="VAERS_ID")
 
