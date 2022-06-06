@@ -1,5 +1,6 @@
 """Parsing symptoms"""
 import re
+import pandas as pd
 
 
 def unique_symptoms(column):
@@ -16,13 +17,6 @@ def parse_symptom_columns(dataset):
     return newlist
 
 
-def parse_symptom_columns_str(dataset):
-    """parse 5 symptoms columns into one string"""
-    mylist = parse_symptom_columns(dataset)
-    newlist = [", ".join(y) for y in mylist]
-    return newlist
-
-
 def list_matching_symptoms(symp_string, column):
     """return list of all symptoms containing provided string"""
     unique = unique_symptoms(column)
@@ -30,6 +24,16 @@ def list_matching_symptoms(symp_string, column):
     return list(filter(reg.match, unique))
 
 
-def find_symptoms(symptom, symptoms_string):
+def find_symptoms(symptom, symptoms):
     """check if symptoms contain provided string"""
-    return symptom in symptoms_string
+    for sym in symptoms:
+        if symptom in sym:
+            return True
+    return False
+
+
+def find_most_frequent_symptoms(dataframe, num):
+    """return num most frequent symptoms in given dataframe"""
+    symptoms = pd.Series([a for b in dataframe["SYMPTOMS"] for a in b])
+    symptoms = symptoms.value_counts().head(n=num)
+    return symptoms

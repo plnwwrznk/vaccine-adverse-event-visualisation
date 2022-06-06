@@ -43,13 +43,19 @@ a {
   width: 100%;
 }
 
-.graphs-selection{
+.graphs-selection, .graphs-selection2{
   width: 100%;
   background-color: #FAC9B8;
   text-align: center;
-
-  padding-top: 12px;
+  padding: 10px;
 }
+
+.graphs-selection2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 .grid-wrapper{
   display: grid;
   grid-template-rows: 1fr 9fr;

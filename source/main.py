@@ -9,12 +9,28 @@ app = Dash(__name__, assets_folder="../assets")
 
 DATA_VAX = readdata.read_vax_data()
 
-print(
-    DATA_VAX["SYMPTOMS_str"]
-    .map(lambda x: parsesymptoms.find_symptoms("Injection site", x))
-    .value_counts()[True]
-)
 
+dataaaa = DATA_VAX[["SYMPTOMS", "VAX_TYPE"]]
+DATA_VAX["injection"] = DATA_VAX["SYMPTOMS"].map(
+    lambda x: parsesymptoms.find_symptoms("Injection site", x)
+)
+DATA_VAX["headache"] = DATA_VAX["SYMPTOMS"].map(
+    lambda x: parsesymptoms.find_symptoms("Headache", x)
+)
+dataaaa = DATA_VAX[["SYMPTOMS", "VAX_TYPE", "injection", "headache"]]
+data1 = (
+    dataaaa.groupby(["VAX_TYPE"])
+    .agg(INJECTION=("injection", "count"), HEADACHE=("headache", "count"))
+    .reset_index()
+)
+fiiig = px.bar(
+    data1,
+    x="VAX_TYPE",
+    y="HEADACHE",
+    template="ggplot2",
+    color_continuous_scale=["#FAC9B8", "#ed5d53"],
+)
+print(parsesymptoms.find_most_frequent_symptoms(DATA_VAX, 15))
 app.layout = html.Div(
     className="grid-wrapper",
     children=[
@@ -65,45 +81,33 @@ app.layout = html.Div(
                             selected_className="custom-tab--selected",
                             children=[
                                 html.Div(
-                                    className="graphs-selection",
+                                    className="graphs-selection2",
                                     children=[
-                                        html.Div(
-                                            className="dropdown-1",
-                                            children=[
-                                                html.Label("Select Vaccine type"),
-                                                dcc.Dropdown(
-                                                    sorted(
-                                                        pd.unique(DATA_VAX["VAX_TYPE"])
-                                                    ),
-                                                    "INFLUENZA SEASONAL",
-                                                    id="wybierz-szczepionke",
-                                                ),
-                                            ],
+                                        html.Label("Select Vaccine type"),
+                                        html.Label("Event"),
+                                        dcc.Dropdown(
+                                            sorted(pd.unique(DATA_VAX["VAX_TYPE"])),
+                                            "INFLUENZA SEASONAL",
+                                            id="wybierz-szczepionke",
                                         ),
-                                        html.Div(
-                                            className="dropdown-2",
-                                            children=[
-                                                html.Label("Event"),
-                                                dcc.Dropdown(
-                                                    [
-                                                        {
-                                                            "label": "ER visit",
-                                                            "value": "ER_VISITS",
-                                                        },
-                                                        {
-                                                            "label": "Hospital visit",
-                                                            "value": "HOSPITAL_VISITS",
-                                                        },
-                                                        {
-                                                            "label": "Death",
-                                                            "value": "DEATHS",
-                                                        },
-                                                    ],
-                                                    value=[],
-                                                    multi=True,
-                                                    id="wybierz-akcje",
-                                                ),
+                                        dcc.Dropdown(
+                                            [
+                                                {
+                                                    "label": "ER visit",
+                                                    "value": "ER_VISITS",
+                                                },
+                                                {
+                                                    "label": "Hospital visit",
+                                                    "value": "HOSPITAL_VISITS",
+                                                },
+                                                {
+                                                    "label": "Death",
+                                                    "value": "DEATHS",
+                                                },
                                             ],
+                                            value=[],
+                                            multi=True,
+                                            id="wybierz-akcje",
                                         ),
                                     ],
                                 ),
@@ -116,22 +120,29 @@ app.layout = html.Div(
                             ],
                         ),
                         dcc.Tab(
-                            label="Tab three, multiline",
+                            label="Symptoms",
                             className="custom-tab",
                             selected_className="custom-tab--selected",
                             children=[
                                 html.Div(
-                                    [
-                                        html.H3("Possible symptoms"),
-                                        html.Label(
-                                            str(
-                                                parsesymptoms.list_matching_symptoms(
-                                                    "Wrong", DATA_VAX["SYMPTOMS"]
-                                                )
-                                            )
+                                    className="graphs-selection2",
+                                    children=[
+                                        html.Label("Select Vaccine type"),
+                                        html.Label("Select Vaccine"),
+                                        dcc.Dropdown(
+                                            sorted(pd.unique(DATA_VAX["VAX_TYPE"])),
+                                            "INFLUENZA SEASONAL",
+                                            id="wybierz-szczepionke2",
                                         ),
-                                    ]
-                                )
+                                    ],
+                                ),
+                                html.Div(
+                                    className="symptoms_graph",
+                                    children=[
+                                        html.H3("Possible symptoms"),
+                                        html.Div(dcc.Graph(figure=fiiig)),
+                                    ],
+                                ),
                             ],
                         ),
                         dcc.Tab(

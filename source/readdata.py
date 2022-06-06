@@ -96,8 +96,11 @@ def read_vax_data():
         ignore_index=True,
     )
     vaerssymptoms["SYMPTOMS"] = symp.parse_symptom_columns(vaerssymptoms)
-    vaerssymptoms["SYMPTOMS_str"] = symp.parse_symptom_columns_str(vaerssymptoms)
     data_vax1 = pd.merge(vaersdata, vaerssymptoms, on="VAERS_ID")
-    data_vax = pd.merge(data_vax1, vaersvax, on="VAERS_ID")
+    data_vax1["check"] = data_vax1["SYMPTOMS"].map(
+        lambda x: symp.find_symptoms("No adverse event", x)
+    )
+    data_vax2 = data_vax1[~data_vax1["check"]].drop("check", axis=1)
+    data_vax = pd.merge(data_vax2, vaersvax, on="VAERS_ID")
 
     return data_vax
