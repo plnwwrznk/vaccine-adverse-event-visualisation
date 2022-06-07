@@ -11,8 +11,7 @@ body {
 h1, h2, h3, h4, h5 {
   font-family: "Open Sans Semi Bold";
   letter-spacing: 2.1px;
-  font-size: 21px;
-  padding-left: 12px;
+  font-size: 18px;
 }
 
 p {
@@ -45,11 +44,17 @@ a {
 
 .graphs-selection{
   width: 100%;
-  background-color: #FAC9B8;
   text-align: center;
-
-  padding-top: 12px;
+  background-color: #FAC9B8;
+  padding: 10px;
 }
+
+.tab_grid{
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  gap: 30px;
+}
+
 .grid-wrapper{
   display: grid;
   grid-template-rows: 1fr 9fr;
@@ -73,7 +78,15 @@ a {
     background-color: #BEBBBB !important;
 }
 
+.dash-dropdown{
+    text-align: left;
+    font-size: 12px;
+}
 
+.checklist-option {
+    display: block;
+    text-align: left;
+}
 .rc-slider-dot-active, .rc-slider-handle, .rc-slider-handle:hover, .rc-slider-handle-active, .rc-slider-disabled, .rc-slider-track {
   border-color: #ed5d53;
   border: #ed5d53;
