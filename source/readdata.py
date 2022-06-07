@@ -6,57 +6,54 @@ import pandas as pd
 from source import parsesymptoms as symp
 
 
-def read_w_parameters(file, fields):
-    """function to read from multiple csv files with parameters"""
-    return pd.read_csv(file, encoding="iso-8859-1", usecols=fields, low_memory=False)
-
-
 columns_data = [
     "VAERS_ID",
     "RECVDATE",
-    "STATE",
     "AGE_YRS",
     "SEX",
     "DIED",
-    "DATEDIED",
-    "L_THREAT",
     "ER_VISIT",
     "HOSPITAL",
     "HOSPDAYS",
     "VAX_DATE",
-    "ONSET_DATE",
-    "NUMDAYS",
-    "CUR_ILL",
-    "PRIOR_VAX",
-    "ALLERGIES",
 ]
 columns_vax = [
     "VAERS_ID",
     "VAX_TYPE",
-    "VAX_MANU",
-    "VAX_LOT",
-    "VAX_DOSE_SERIES",
-    "VAX_ROUTE",
-    "VAX_SITE",
     "VAX_NAME",
 ]
 columns_symptoms = [
     "VAERS_ID",
     "SYMPTOM1",
-    "SYMPTOMVERSION1",
     "SYMPTOM2",
-    "SYMPTOMVERSION2",
     "SYMPTOM3",
-    "SYMPTOMVERSION3",
     "SYMPTOM4",
-    "SYMPTOMVERSION4",
     "SYMPTOM5",
-    "SYMPTOMVERSION5",
 ]
 
 
+def read_w_parameters(file, fields):
+    """Read from multiple csv files selecting only provided column names
+    Parameters
+        ----------
+        file : str
+            name of the file
+        fields : list
+            List of column names
+    Returns
+        -------
+        DataFrame
+            dataframe containing selected columns from the file
+    """
+    return pd.read_csv(file, encoding="iso-8859-1", usecols=fields, low_memory=False)
+
+
 def read_vax_data():
-    """function to load data from vax files"""
+    """Function to load data from all vax files
+    Returns
+        -------
+        DataFrame
+            dataframe containing data from all the VAERS data in data folder"""
 
     vaersdata = pd.concat(
         map(read_w_parameters, glob.glob("data/*VAERSDATA.csv"), repeat(columns_data)),
