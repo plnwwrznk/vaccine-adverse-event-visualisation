@@ -1,6 +1,11 @@
 """Testing methods in paersesympthoms"""
 import pandas as pd
-from source.parsesymptoms import find_symptoms, unique_symptoms, parse_symptom_columns
+from source.parsesymptoms import (
+    find_symptoms,
+    unique_symptoms,
+    parse_symptom_columns,
+    list_matching_symptoms,
+)
 
 
 def test_unique_symptoms():
@@ -18,7 +23,7 @@ def test_parse_symptom_columns():
             {
                 "SYMPTOM1": "headache",
                 "SYMPTOM2": "back pain",
-                "SYMPTOM3": "high blood presure",
+                "SYMPTOM3": "high blood pressure",
                 "SYMPTOM4": "fever",
                 "SYMPTOM5": "sadness",
             },
@@ -26,7 +31,7 @@ def test_parse_symptom_columns():
         )
     )
     assert result2 == [
-        ["headache", "back pain", "high blood presure", "fever", "sadness"]
+        ["headache", "back pain", "high blood pressure", "fever", "sadness"]
     ]
 
 
@@ -34,3 +39,18 @@ def test_find_sympthoms():
     """test of find_SYMPTHOMS"""
     find = find_symptoms("headache", ["headache", "back pain", "high blood pressure"])
     assert find is True
+
+
+# def test_find_most_frequent_symptoms():
+#     """"test of find_most_frequent_symptoms"""
+#     frame = pd.DataFrame({"SYMPTOMS": ("headache", "back pain", "high blood pressure",
+#     "fever", "sadness", "headache")})
+#     find_most_frequent = find_most_frequent_symptoms(frame, 1)
+#     assert find_most_frequent == ("headache", 2)
+
+
+def test_list_matching_symptoms():
+    """test of list_matching_symptoms"""
+    data = pd.DataFrame(["headache", "back pain", "high blood pressure"]).values
+    result = list_matching_symptoms("headache", data)
+    assert result == ["headache"]
