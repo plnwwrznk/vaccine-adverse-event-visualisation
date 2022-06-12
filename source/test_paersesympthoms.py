@@ -41,14 +41,6 @@ def test_find_sympthoms():
     assert find is True
 
 
-# def test_find_most_frequent_symptoms():
-#     """"test of find_most_frequent_symptoms"""
-#     frame = pd.DataFrame({"SYMPTOMS": ("headache", "back pain", "high blood pressure",
-#     "fever", "sadness", "headache")})
-#     find_most_frequent = find_most_frequent_symptoms(frame, 1)
-#     assert find_most_frequent == ("headache", 2)
-
-
 def test_list_matching_symptoms():
     """test of list_matching_symptoms"""
     data = pd.DataFrame(["headache", "back pain", "high blood pressure"]).values
